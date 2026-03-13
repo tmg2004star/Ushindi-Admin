@@ -11,7 +11,28 @@
     <style>
         :root { --primary: #f1c40f; --success: #2ecc71; --danger: #e74c3c; --dark-bg: #0f0f0f; --card-bg: #1a1a1a; --text-white: #ffffff; --text-gray: #a0a0a0; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--dark-bg); color: var(--text-white); padding-bottom: 80px; }
+        body { background-color: var(--dark-bg); color: var(--text-white); }
+        
+        /* --- AUTHENTICATION STYLES --- */
+        .auth-wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .auth-container { background: var(--card-bg); width: 100%; max-width: 500px; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); border: 1px solid #333; }
+        .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 30px; }
+        .logo-box { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #000; }
+        .app-name { font-size: 24px; font-weight: 800; color: var(--primary); }
+        .auth-container h2 { font-size: 20px; margin-bottom: 20px; text-align: center; color: var(--text-white); }
+        .input-group { margin-bottom: 18px; position: relative; }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 8px; color: var(--text-gray); }
+        .input-group input { width: 100%; padding: 16px; background: #252525; border: 1px solid #444; border-radius: 15px; color: white; font-size: 15px; outline: none; }
+        .input-group input:focus { border-color: var(--primary); }
+        .btn-auth { width: 100%; padding: 16px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; color: #000; margin-top: 10px; transition: 0.3s; }
+        .btn-auth:disabled { background: #555; cursor: not-allowed; color: #888; }
+        .switch-box { text-align: center; margin-top: 25px; padding: 15px; border-top: 1px solid #333; font-size: 14px; }
+        .switch-btn { color: var(--primary); cursor: pointer; font-weight: bold; text-decoration: underline; padding: 10px; display: inline-block; }
+        .error-msg { color: #ff4757; font-size: 13px; text-align: center; margin-top: 10px; background: rgba(255, 71, 87, 0.1); padding: 10px; border-radius: 10px; display: none; }
+        .hidden { display: none !important; }
+
+        /* --- DASHBOARD STYLES --- */
+        #admin-dashboard { display: none; padding-bottom: 80px; }
         .top-bar { background: var(--card-bg); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); position: sticky; top: 0; z-index: 100; }
         .admin-content { padding: 20px; }
         .tab-content { display: none; }
@@ -55,84 +76,282 @@
 </head>
 <body>
 
-    <div class="top-bar">
-        <h2>Admin Pro</h2>
-        <i class="fas fa-user-shield" style="color: var(--primary); font-size: 20px;"></i>
-    </div>
+    <div class="auth-wrapper" id="auth-section">
+        <div class="auth-container">
+            <div class="brand">
+                <div class="logo-box"><i class="fas fa-user-shield"></i></div>
+                <div class="app-name">Admin Pro</div>
+            </div>
 
-    <div class="admin-content">
-        
-        <div id="finance-tab" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-label">Jumla ya Mapato</span>
-                    <div class="stat-value" id="total-revenue">0.00</div>
+            <div id="signup-view">
+                <h2>Sajili Akaunti (Admin)</h2>
+                <div class="input-group">
+                    <label>Jina la Admin</label>
+                    <input type="text" id="reg-name" placeholder="Mfano: Super Admin">
                 </div>
-                <div class="stat-card" style="border-left-color: var(--success);">
-                    <span class="stat-label">Admin (60%)</span>
-                    <div class="stat-value mine" id="admin-balance">0.00</div>
+                <div class="input-group">
+                    <label>Namba ya Simu</label>
+                    <input type="tel" id="reg-phone" placeholder="+255xxxxxxxxx">
                 </div>
-                <div class="stat-card" style="border-left-color: var(--text-gray);">
-                    <span class="stat-label">Tipsters (40%)</span>
-                    <div class="stat-value" id="tipster-balance">0.00</div>
+                <button class="btn-auth" id="btn-reg">TUMA KODI YA OTP</button>
+                <p class="error-msg" id="reg-error"></p>
+                <div class="switch-box">
+                    <span style="color:#888;">Tayari una akaunti ya Admin?</span><br>
+                    <span class="switch-btn" onclick="showAuthView('login-view')">INGIA HAPA</span>
                 </div>
             </div>
-            <h3 style="margin-bottom:15px; font-size:16px;">Maombi ya Kutoa Hela</h3>
-            <div id="withdrawal-list"><p style="color:#555; text-align:center;">Inatafuta maombi...</p></div>
-        </div>
 
-        <div id="bets-tab" class="tab-content">
-            <h3 style="margin-bottom:15px; font-size:16px;">Ruhusu Mikeka (Mipya)</h3>
-            <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Hapa ni mikeka ijayo. Hakiki na uruhusu iende hewani.</p>
-            <div id="mikeka-list"><p style="text-align:center; color:#555;">Inavuta mikeka...</p></div>
-        </div>
-
-        <div id="results-tab" class="tab-content">
-            <h3 style="margin-bottom:15px; font-size:16px;">Weka Matokeo (Iliyoisha)</h3>
-            <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Hii ni mikeka ambayo muda wake umepita. Weka TIKI au CHANIKA.</p>
-            <div id="expired-list"><p style="text-align:center; color:#555;">Inatafuta mikeka iliyoisha...</p></div>
-        </div>
-
-        <div id="avatar-tab" class="tab-content">
-            <h3>Pakia Avatar</h3>
-            <div class="upload-container" onclick="document.getElementById('avatar-input').click()">
-                <i class="fas fa-user-circle"></i><p id="avatar-text">Chagua Avatar</p>
-                <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="handlePreview(event, 'avatar')">
-                <div id="avatar-preview-box" class="preview-box"><img id="avatar-preview-img" src=""></div>
+            <div id="login-view" class="hidden">
+                <h2>Karibu Tena Admin</h2>
+                <p style="text-align:center; font-size:12px; color:#aaa; margin-bottom:15px;">Weka namba yako kupata OTP ya kuingia</p>
+                <div class="input-group">
+                    <label>Namba ya Simu</label>
+                    <input type="tel" id="login-phone" placeholder="+255xxxxxxxxx">
+                </div>
+                <button class="btn-auth" id="btn-login">TUMA KODI YA OTP</button>
+                <p class="error-msg" id="login-error"></p>
+                <div class="switch-box">
+                    <span style="color:#888;">Hujasajiliwa kama Admin?</span><br>
+                    <span class="switch-btn" onclick="showAuthView('signup-view')">JISAJILI SASA</span>
+                </div>
             </div>
-            <button class="btn-upload" id="avatar-save-btn" onclick="uploadToSupabase('avatar')">WEKA KWENYE POOL</button>
-            <div class="avatar-preview-grid" id="avatar-pool-display"></div>
-        </div>
 
-        <div id="ads-tab" class="tab-content">
-            <h3>Pakia Tangazo</h3>
-             <div class="upload-container" onclick="document.getElementById('ad-input').click()">
-                <i class="fas fa-images"></i><p id="ad-text">Chagua Tangazo</p>
-                <input type="file" id="ad-input" accept="image/*" style="display: none;" onchange="handlePreview(event, 'ad')">
-                <div id="ad-preview-box" class="preview-box"><img id="ad-preview-img" src=""></div>
+            <div id="verify-view" class="hidden">
+                <h2>Thibitisha Namba</h2>
+                <p style="text-align:center; font-size:13px; color:#aaa; margin-bottom:20px;">Weka kodi tuliyokutumia kwenye SMS</p>
+                <div class="input-group">
+                    <input type="number" id="otp-code" placeholder="000000" style="text-align:center; letter-spacing:5px; font-size: 24px;">
+                </div>
+                <button class="btn-auth" id="btn-verify">THIBITISHA NA INGIA</button>
+                <p class="error-msg" id="verify-error"></p>
+                
+                <div style="text-align:center; margin-top:20px; font-size:13px;">
+                    <span style="color:#888;">Hujapata kodi?</span>
+                    <span id="btn-resend" style="color:var(--primary); cursor:pointer; font-weight:bold; margin-left:5px;" onclick="resendOTP()">TUMA TENA</span>
+                    <p id="resend-msg" style="color:var(--success); margin-top:5px; display:none; font-size:12px;">Kodi imetumwa tena!</p>
+                </div>
             </div>
-            <button class="btn-upload" id="ad-save-btn" onclick="uploadToSupabase('ad')">PAKIA TANGAZO</button>
-            
-            <h3 style="margin-top:20px;">Matangazo Yaliyopo</h3>
-            <div class="avatar-preview-grid" id="ads-pool-display"></div>
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('finance-tab', this)"><i class="fas fa-wallet"></i><span>Fedha</span></div>
-        <div class="nav-item" onclick="switchTab('bets-tab', this)"><i class="fas fa-receipt"></i><span>Mikeka</span></div>
-        <div class="nav-item" onclick="switchTab('results-tab', this)"><i class="fas fa-trophy"></i><span>Matokeo</span></div>
-        <div class="nav-item" onclick="switchTab('avatar-tab', this)"><i class="fas fa-user-plus"></i><span>Avatars</span></div>
-        <div class="nav-item" onclick="switchTab('ads-tab', this)"><i class="fas fa-images"></i><span>Ads</span></div>
-    </nav>
+    <div id="admin-dashboard">
+        <div class="top-bar">
+            <h2>Admin Pro</h2>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <i class="fas fa-user-shield" style="color: var(--primary); font-size: 20px;"></i>
+                <i class="fas fa-sign-out-alt" style="color: var(--danger); font-size: 20px; cursor: pointer;" onclick="logoutAdmin()" title="Ondoka"></i>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <div id="finance-tab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Jumla ya Mapato</span>
+                        <div class="stat-value" id="total-revenue">0.00</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--success);">
+                        <span class="stat-label">Admin (60%)</span>
+                        <div class="stat-value mine" id="admin-balance">0.00</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--text-gray);">
+                        <span class="stat-label">Tipsters (40%)</span>
+                        <div class="stat-value" id="tipster-balance">0.00</div>
+                    </div>
+                </div>
+                <h3 style="margin-bottom:15px; font-size:16px;">Maombi ya Kutoa Hela</h3>
+                <div id="withdrawal-list"><p style="color:#555; text-align:center;">Inatafuta maombi...</p></div>
+            </div>
+
+            <div id="bets-tab" class="tab-content">
+                <h3 style="margin-bottom:15px; font-size:16px;">Ruhusu Mikeka (Mipya)</h3>
+                <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Hapa ni mikeka ijayo. Hakiki na uruhusu iende hewani.</p>
+                <div id="mikeka-list"><p style="text-align:center; color:#555;">Inavuta mikeka...</p></div>
+            </div>
+
+            <div id="results-tab" class="tab-content">
+                <h3 style="margin-bottom:15px; font-size:16px;">Weka Matokeo (Iliyoisha)</h3>
+                <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Hii ni mikeka ambayo muda wake umepita. Weka TIKI au CHANIKA.</p>
+                <div id="expired-list"><p style="text-align:center; color:#555;">Inatafuta mikeka iliyoisha...</p></div>
+            </div>
+
+            <div id="avatar-tab" class="tab-content">
+                <h3>Pakia Avatar</h3>
+                <div class="upload-container" onclick="document.getElementById('avatar-input').click()">
+                    <i class="fas fa-user-circle"></i><p id="avatar-text">Chagua Avatar</p>
+                    <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="handlePreview(event, 'avatar')">
+                    <div id="avatar-preview-box" class="preview-box"><img id="avatar-preview-img" src=""></div>
+                </div>
+                <button class="btn-upload" id="avatar-save-btn" onclick="uploadToSupabase('avatar')">WEKA KWENYE POOL</button>
+                <div class="avatar-preview-grid" id="avatar-pool-display"></div>
+            </div>
+
+            <div id="ads-tab" class="tab-content">
+                <h3>Pakia Tangazo</h3>
+                 <div class="upload-container" onclick="document.getElementById('ad-input').click()">
+                    <i class="fas fa-images"></i><p id="ad-text">Chagua Tangazo</p>
+                    <input type="file" id="ad-input" accept="image/*" style="display: none;" onchange="handlePreview(event, 'ad')">
+                    <div id="ad-preview-box" class="preview-box"><img id="ad-preview-img" src=""></div>
+                </div>
+                <button class="btn-upload" id="ad-save-btn" onclick="uploadToSupabase('ad')">PAKIA TANGAZO</button>
+                
+                <h3 style="margin-top:20px;">Matangazo Yaliyopo</h3>
+                <div class="avatar-preview-grid" id="ads-pool-display"></div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('finance-tab', this)"><i class="fas fa-wallet"></i><span>Fedha</span></div>
+            <div class="nav-item" onclick="switchTab('bets-tab', this)"><i class="fas fa-receipt"></i><span>Mikeka</span></div>
+            <div class="nav-item" onclick="switchTab('results-tab', this)"><i class="fas fa-trophy"></i><span>Matokeo</span></div>
+            <div class="nav-item" onclick="switchTab('avatar-tab', this)"><i class="fas fa-user-plus"></i><span>Avatars</span></div>
+            <div class="nav-item" onclick="switchTab('ads-tab', this)"><i class="fas fa-images"></i><span>Ads</span></div>
+        </nav>
+    </div>
 
     <script>
         const SUPABASE_URL = "https://hgszvjuzjwmogmnslzkg.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhnc3p2anV6andtb2dtbnNsemtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTAyMDAsImV4cCI6MjA4NTcyNjIwMH0.aYxh_5KSuaJkI2kgdMbRGdntDuLu8-saYMUqkxm1GUE";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // --- AUTHENTICATION LOGIC ---
+        let tempPhone = "";
+        let tempName = ""; 
+        let isNewRegistration = false;
+
+        document.getElementById('btn-reg').onclick = registerAdmin;
+        document.getElementById('btn-login').onclick = loginAdmin;
+        document.getElementById('btn-verify').onclick = verifyOTP;
+
+        function showAuthView(viewId) {
+            ['signup-view', 'login-view', 'verify-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+            document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
+        }
+
+        function showAuthError(id, msg) {
+            const el = document.getElementById(id);
+            el.innerText = msg; el.style.display = "block";
+        }
+
+        async function checkAdminAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                // Tunahakikisha huyu mtu ana cheo cha 'admin' kweli
+                const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', session.user.id).single();
+                
+                if (profile && profile.role === 'admin') {
+                    // Mruhusu aingie Dashboard
+                    document.getElementById('auth-section').style.display = 'none';
+                    document.getElementById('admin-dashboard').style.display = 'block';
+                    fetchFinanceStats(); fetchWithdrawals();
+                } else {
+                    // Mtu wa kawaida akijaribu kuingia kwenye link ya Admin, tunamtupa nje
+                    alert("KOSA: Akaunti hii haina ruhusa ya Admin!");
+                    await supabaseClient.auth.signOut();
+                    showAuthView('login-view');
+                }
+            }
+        }
+
+        async function registerAdmin() {
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const btn = document.getElementById('btn-reg');
+            
+            if (!name || !phone) return showAuthError('reg-error', "Tafadhali jaza Jina na Namba ya simu!");
+
+            btn.disabled = true; btn.innerText = "Inatuma Kodi...";
+            tempPhone = phone; tempName = name; isNewRegistration = true;
+
+            const { data, error } = await supabaseClient.auth.signInWithOtp({ phone: phone });
+
+            if (error) { 
+                showAuthError('reg-error', error.message); 
+                btn.disabled = false; btn.innerText = "TUMA KODI YA OTP"; 
+            } else { 
+                showAuthView('verify-view'); 
+                btn.disabled = false; btn.innerText = "TUMA KODI YA OTP"; 
+            }
+        }
+
+        async function loginAdmin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const btn = document.getElementById('btn-login');
+
+            if(!phone) return showAuthError('login-error', "Weka namba yako ya simu");
+
+            btn.disabled = true; btn.innerText = "Inatuma Kodi...";
+            tempPhone = phone; isNewRegistration = false;
+
+            const { data, error } = await supabaseClient.auth.signInWithOtp({ phone: phone });
+
+            if (error) { 
+                showAuthError('login-error', error.message); 
+                btn.disabled = false; btn.innerText = "TUMA KODI YA OTP"; 
+            } else { 
+                showAuthView('verify-view'); 
+                btn.disabled = false; btn.innerText = "TUMA KODI YA OTP"; 
+            }
+        }
+
+        async function verifyOTP() {
+            const token = document.getElementById('otp-code').value.trim();
+            const btn = document.getElementById('btn-verify');
+            
+            if(!token || token.length !== 6) return showAuthError('verify-error', "Jaza namba zote 6 za OTP");
+            
+            btn.disabled = true; btn.innerText = "INAHAKIKI...";
+
+            const { data, error } = await supabaseClient.auth.verifyOtp({ phone: tempPhone, token: token, type: 'sms' });
+
+            if (error) { 
+                showAuthError('verify-error', "Kodi imekosewa au imeisha muda!"); 
+                btn.disabled = false; btn.innerText = "THIBITISHA NA INGIA";
+            } else { 
+                // KAMA NI USAJILI MPYA WA ADMIN, TUNAHIFADHI ROLE YAKE KAMA 'admin'
+                if (isNewRegistration && data.user) {
+                    await supabaseClient.from('profiles').upsert([{
+                        id: data.user.id,
+                        full_name: tempName,
+                        phone_number: tempPhone,
+                        role: 'admin',
+                        avatar_url: 'https://i.pravatar.cc/150?img=11'
+                    }]);
+                }
+                
+                // Baada ya hapo, angalia tena ulinzi na mruhusu
+                checkAdminAuth();
+            }
+        }
+
+        async function resendOTP() {
+            const btn = document.getElementById('btn-resend');
+            const msgEl = document.getElementById('resend-msg');
+            btn.style.pointerEvents = 'none'; btn.style.opacity = '0.5'; btn.innerText = "INATUMA...";
+            const { error } = await supabaseClient.auth.resend({ type: 'sms', phone: tempPhone });
+            if (error) { 
+                showAuthError('verify-error', error.message); 
+                btn.innerText = "JARIBU TENA"; btn.style.pointerEvents = 'auto'; btn.style.opacity = '1'; 
+            } else {
+                msgEl.style.display = 'block'; btn.innerText = "IMETUMWA";
+                setTimeout(() => { msgEl.style.display = 'none'; btn.innerText = "TUMA TENA"; btn.style.pointerEvents = 'auto'; btn.style.opacity = '1'; }, 60000); 
+            }
+        }
+
+        async function logoutAdmin() {
+            if(confirm("Una uhakika unataka kuondoka kwenye Admin Panel?")) {
+                await supabaseClient.auth.signOut();
+                location.reload();
+            }
+        }
+
+        // Washa ulinzi ukurasa unapofunguka
+        checkAdminAuth();
+
+        // --- ADMIN DASHBOARD LOGIC (BETS, FINANCE, ADS, ETC) ---
         let currentFile = null;
 
-        // --- 1. FINANCE ---
         async function fetchFinanceStats() {
             const { data: salesData } = await supabaseClient.from('mikeka').select('total_sales_amount');
             if (salesData) {
@@ -166,7 +385,6 @@
         async function updateWithdrawal(id, newStatus, amount, phone, btnElement) {
             if (newStatus === 'PAID') {
                 if(!confirm(`Je, una uhakika unataka kumlipa TZS ${amount.toLocaleString()} kwenye namba ${phone}?`)) return;
-
                 const originalText = btnElement.innerText;
                 btnElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> INATUMA...`;
                 btnElement.disabled = true;
@@ -174,7 +392,6 @@
                 try {
                     const { data, error } = await supabaseClient.functions.invoke('lipa-tipster', { body: { kiasi: amount, nambaYaSimu: phone } });
                     if (error) throw error;
-
                     if (data && data.output_ResponseCode === "INS-0") {
                         await supabaseClient.from('withdrawals').update({ status: 'PAID' }).eq('id', id);
                         alert("Pesa imetumwa kikamilifu kwa Tipster!");
@@ -191,7 +408,6 @@
             }
         }
 
-        // --- 2. MIKEKA MIPYA (PENDING APPROVAL) ---
         async function fetchPendingBets() {
             const now = new Date().toISOString();
             const { data } = await supabaseClient
@@ -201,12 +417,10 @@
                 .order('created_at', { ascending: false });
 
             const list = document.getElementById('mikeka-list');
-            
             if (data && data.length > 0) {
                 list.innerHTML = data.map(mkeka => {
                     const isVisible = mkeka.visible === true;
                     const tipsterName = mkeka.profiles && mkeka.profiles.full_name ? mkeka.profiles.full_name : "Tipster Asiyejulikana";
-                    
                     return `
                     <div class="req-card" style="border-left: 4px solid ${isVisible ? 'var(--success)' : '#f39c12'}">
                         ${mkeka.file_url ? `<img src="${mkeka.file_url}" class="bet-img-preview" onclick="window.open(this.src)">` : ''}
@@ -231,72 +445,35 @@
                             </div>
                         </div>
                         <div class="req-actions">
-                            ${!isVisible ? 
-                                `<button class="btn-sm" style="background:#3498db; color:white;" onclick="approveBet('${mkeka.id}', this)">POST (RUHUSU)</button>` 
-                                : 
-                                `<button class="btn-sm" style="background:var(--success); color:white;" disabled>TAYARI IPO HEWANI ✅</button>`
-                            }
+                            ${!isVisible ? `<button class="btn-sm" style="background:#3498db; color:white;" onclick="approveBet('${mkeka.id}', this)">POST (RUHUSU)</button>` : `<button class="btn-sm" style="background:var(--success); color:white;" disabled>TAYARI IPO HEWANI ✅</button>`}
                             <button class="btn-sm btn-delete" onclick="deleteBet('${mkeka.id}', this)">FUTA MKEKA</button>
                         </div>
                     </div>`; }).join('');
             } else { list.innerHTML = `<p style="color:#555; text-align:center;">Hakuna mikeka mipya.</p>`; }
         }
 
-        // HII NDIO FUNCTION INAYOZIMA BUTTON MOJA KWA MOJA NA KUTOIRUHUSU KUBONYEZWA TENA
-        // HII NDIO FUNCTION ILIYOREKEBISHWA ILI KUKAMATA MAKOSA YA KIUSALAMA
         async function approveBet(id, btnElement) {
             const originalText = btnElement.innerText;
-            btnElement.innerText = "INASUBIRI...";
-            btnElement.disabled = true;
-
-            // Tumeongeza .select() mwishoni ili Supabase iturudishie majibu kama kweli ime-save
-            const { data, error } = await supabaseClient
-                .from('mikeka')
-                .update({ visible: true })
-                .eq('id', id)
-                .select();
+            btnElement.innerText = "INASUBIRI..."; btnElement.disabled = true;
+            const { data, error } = await supabaseClient.from('mikeka').update({ visible: true }).eq('id', id).select();
             
-            if (error) {
-                alert("KOSA: Imeshindwa kuruhusu. Maelezo: " + error.message);
-                btnElement.innerText = originalText;
-                btnElement.disabled = false;
-            } else if (data && data.length === 0) {
-                // HAPA NDIPO MTEGO ULIPO: Supabase inakataa kimya kimya kama wewe siyo Admin
-                alert("KOSA LA KIUSALAMA: Mfumo umekukataa! Akaunti yako haina cheo cha 'admin'. Nenda Supabase kwenye table ya 'profiles' ukabadili role yako iwe 'admin'.");
-                btnElement.innerText = originalText;
-                btnElement.disabled = false;
-            } else {
-                // Kama imekubali na kusave kikweli kwenye Database
-                btnElement.innerText = "TAYARI IPO HEWANI ✅";
-                btnElement.style.background = "var(--success)";
-            }
+            if (error) { alert("KOSA: " + error.message); btnElement.innerText = originalText; btnElement.disabled = false; } 
+            else if (data && data.length === 0) { alert("KOSA LA KIUSALAMA: Mfumo umekukataa!"); btnElement.innerText = originalText; btnElement.disabled = false; } 
+            else { btnElement.innerText = "TAYARI IPO HEWANI ✅"; btnElement.style.background = "var(--success)"; }
         }
+
         async function deleteBet(id, btnElement) {
             if(confirm("Una uhakika unataka kufuta kabisa mkeka huu?")) { 
-                btnElement.innerText = "INAFUTA...";
-                btnElement.disabled = true;
-                
+                btnElement.innerText = "INAFUTA..."; btnElement.disabled = true;
                 const { error } = await supabaseClient.from('mikeka').delete().eq('id', id); 
-                
-                if(error) {
-                    alert("Kosa kufuta: " + error.message);
-                    btnElement.innerText = "FUTA MKEKA";
-                    btnElement.disabled = false;
-                } else {
-                    fetchPendingBets(); 
-                }
+                if(error) { alert("Kosa kufuta: " + error.message); btnElement.innerText = "FUTA MKEKA"; btnElement.disabled = false; } 
+                else { fetchPendingBets(); }
             }
         }
 
-        // --- 3. MATOKEO (EXPIRED BETS) ---
         async function fetchExpiredBets() {
             const now = new Date().toISOString();
-            const { data } = await supabaseClient
-                .from('mikeka')
-                .select('*')
-                .lt('start_datetime', now)
-                .order('start_datetime', { ascending: false });
-
+            const { data } = await supabaseClient.from('mikeka').select('*').lt('start_datetime', now).order('start_datetime', { ascending: false });
             const list = document.getElementById('expired-list');
             
             if (data && data.length > 0) {
@@ -305,53 +482,34 @@
                     let borderColor = '#f39c12';
                     if(status === 'WON') borderColor = '#2ecc71';
                     if(status === 'LOST') borderColor = '#e74c3c';
-
                     return `
                     <div class="req-card" style="border-left: 4px solid ${borderColor}">
                         <span class="status-badge" style="background:${borderColor}; color:white;">${status}</span>
                         ${mkeka.file_url ? `<img src="${mkeka.file_url}" class="bet-img-preview" onclick="window.open(this.src)">` : ''}
-                        
-                        <div class="req-info">
-                            <span style="font-size:12px; color:#aaa;">Ilichezwa: ${new Date(mkeka.start_datetime).toLocaleString()}</span>
-                        </div>
-
+                        <div class="req-info"><span style="font-size:12px; color:#aaa;">Ilichezwa: ${new Date(mkeka.start_datetime).toLocaleString()}</span></div>
                         <div class="req-actions" style="grid-template-columns: 1fr 1fr;">
                             <button class="btn-sm btn-approve" onclick="updateBetOutcome('${mkeka.id}', 'WON', this)"><i class="fas fa-check"></i> TIKI</button>
                             <button class="btn-sm btn-reject" onclick="updateBetOutcome('${mkeka.id}', 'LOST', this)"><i class="fas fa-times"></i> CHANIKA</button>
                         </div>
-                    </div>`; 
-                }).join('');
+                    </div>`; }).join('');
             } else { list.innerHTML = `<p style="color:#555; text-align:center;">Hakuna mikeka iliyoisha muda.</p>`; }
         }
 
         async function updateBetOutcome(id, outcome, btnElement) {
             if(!confirm(`Je una uhakika mkeka huu ume-${outcome}?`)) return;
-            
             const originalText = btnElement.innerText;
-            btnElement.innerText = "INASUBIRI...";
-            btnElement.disabled = true;
-
+            btnElement.innerText = "INASUBIRI..."; btnElement.disabled = true;
             const { error } = await supabaseClient.from('mikeka').update({ status: outcome }).eq('id', id);
-            
-            if(error) {
-                alert("Error: " + error.message);
-                btnElement.innerText = originalText;
-                btnElement.disabled = false;
-            } else { 
-                fetchExpiredBets(); 
-            }
+            if(error) { alert("Error: " + error.message); btnElement.innerText = originalText; btnElement.disabled = false; } 
+            else { fetchExpiredBets(); }
         }
 
-        // --- 4. UPLOAD FUNCTION YA JUMLA (AVATAR NA ADS) ---
         function handlePreview(event, type) {
             const file = event.target.files[0];
             if (file) {
                 currentFile = file;
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById(`${type}-preview-img`).src = e.target.result;
-                    document.getElementById(`${type}-preview-box`).style.display = 'block';
-                }
+                reader.onload = function(e) { document.getElementById(`${type}-preview-img`).src = e.target.result; document.getElementById(`${type}-preview-box`).style.display = 'block'; }
                 reader.readAsDataURL(file);
             }
         }
@@ -363,39 +521,28 @@
             try {
                 const fileName = `${type}_${Date.now()}.png`;
                 const bucket = type === 'avatar' ? 'avatars' : 'ads';
-                
                 const { error: uploadError } = await supabaseClient.storage.from(bucket).upload(fileName, currentFile);
                 if (uploadError) throw uploadError;
-
                 const { data: urlData } = supabaseClient.storage.from(bucket).getPublicUrl(fileName);
-                
                 const table = type === 'avatar' ? 'avatar_pool' : 'ads_pool';
                 const { error: dbError } = await supabaseClient.from(table).insert([{ url: urlData.publicUrl }]);
                 if (dbError) throw dbError;
-
-                alert("Imefanikiwa kupakiwa!"); 
-                location.reload();
-            } catch (err) { 
-                alert("Error: " + err.message); 
-                btn.innerText = "JARIBU TENA"; 
-                btn.disabled = false; 
-            }
+                alert("Imefanikiwa kupakiwa!"); currentFile = null;
+                document.getElementById(`${type}-preview-box`).style.display = 'none';
+                type === 'avatar' ? fetchAvatarPool() : fetchAdsPool();
+                btn.innerText = type === 'avatar' ? "WEKA KWENYE POOL" : "PAKIA TANGAZO"; btn.disabled = false;
+            } catch (err) { alert("Error: " + err.message); btn.innerText = "JARIBU TENA"; btn.disabled = false; }
         }
 
-        // --- AVATARS FETCH & DELETE ---
         async function fetchAvatarPool() {
             const { data } = await supabaseClient.from('avatar_pool').select('*').order('created_at', { ascending: false });
             if (data) {
                 document.getElementById('avatar-pool-display').innerHTML = data.map(av => `
-                    <div class="avatar-item">
-                        <img src="${av.url}">
-                        <div class="del-btn" onclick="deleteAvatar('${av.id}')"><i class="fas fa-times"></i></div>
-                    </div>`).join('');
+                    <div class="avatar-item"><img src="${av.url}"><div class="del-btn" onclick="deleteAvatar('${av.id}')"><i class="fas fa-times"></i></div></div>`).join('');
             }
         }
         async function deleteAvatar(id) { if(confirm("Futa Avatar hii?")) { await supabaseClient.from('avatar_pool').delete().eq('id', id); fetchAvatarPool(); } }
 
-        // --- ADS FETCH & DELETE ---
         async function fetchAdsPool() {
             const { data } = await supabaseClient.from('ads_pool').select('*').order('created_at', { ascending: false });
             const container = document.getElementById('ads-pool-display');
@@ -409,7 +556,6 @@
         }
         async function deleteAd(id) { if(confirm("Futa tangazo hili?")) { await supabaseClient.from('ads_pool').delete().eq('id', id); fetchAdsPool(); } }
 
-        // --- TAB SWITCHER ---
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -421,8 +567,6 @@
             if(tabId === 'avatar-tab') fetchAvatarPool();
             if(tabId === 'ads-tab') fetchAdsPool();
         }
-
-        window.onload = () => { fetchFinanceStats(); fetchWithdrawals(); };
     </script>
 </body>
 </html>
